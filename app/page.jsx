@@ -1,20 +1,27 @@
 
 'use client'
+import { useCallback } from 'react';
 import {Movies} from '../components/Movies'
 import {useMovies} from '../hooks/useMovies'
 import {useSearch} from '../hooks/useSearch'
-
+import debounce from "just-debounce-it";
 
 
 export default function Home() {
   const {search,updateSearch,error} = useSearch();
   const {movies,loading, getMovies} = useMovies({search});
 
+  const debouncedGetMovies = useCallback(
+    debounce(search => {
+      getMovies({search});
+    }, 600)
+    ,[]
+  )
+
   
   const handleSubmit = (event) =>{
     event.preventDefault();
-    getMovies({search})
-    
+   
     {/*const fields = Object.fromEntries(
       new FormData(event.target)
     );
@@ -26,6 +33,7 @@ export default function Home() {
   const handleChange = (event) => {
     const newQuery = event.target.value
     updateSearch(newQuery);
+    debouncedGetMovies(newQuery);
     
   }
 
